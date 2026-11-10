@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snake</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' rx='2' fill='%230f141b'/%3E%3Crect x='1.5' y='1.5' width='7' height='7' rx='2' fill='%233ecf6b'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0f141b;
+      --panel: #18202b;
+      --text: #e6edf3;
+      --muted: #8b98a8;
+      --accent: #3ecf6b;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    main {
+      width: min(92vw, 70vh, 560px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; color: var(--accent); }
+    .scores { display: flex; gap: 18px; color: var(--muted); font-size: 0.95rem; }
+    .scores b { color: var(--text); font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+    .board {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #26303d;
+      touch-action: none;       /* let us handle swipes without the page scrolling */
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .grid {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      /* checkerboard: one 2x2-cell tile (10% of a 20-cell board), repeated */
+      background: repeating-conic-gradient(#1b2330 0% 25%, #18202b 0% 50%) 0 0 / 10% 10%;
+    }
+    .food { fill: #ff5d5d; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      padding: 16px;
+      background: rgba(15, 20, 27, 0.78);
+    }
+    .overlay h2 { margin: 0; font-size: 1.8rem; }
+    .overlay p { margin: 0; color: var(--muted); }
+    .fade-enter-active, .fade-leave-active { transition: opacity 0.15s; }
+    .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+    .help { margin: 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    kbd {
+      background: var(--panel);
+      border: 1px solid #26303d;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- The Vue template. A script tag keeps it as raw text, so the browser won't mangle it. -->
+  <script type="text/x-template" id="app-template">
+    <main>
+      <header>
+        <h1>SNAKE</h1>
+        <div class="scores">
+          <span>Score<b>{{ score }}</b></span>
+          <span>Best<b>{{ best }}</b></span>
+        </div>
+      </header>
+
+      <div
+        class="board"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="onPointerUp"
+        @pointercancel="onPointerCancel"
+      >
+        <svg class="grid" :viewBox="'0 0 ' + cols + ' ' + rows">
+          <circle v-if="state.food" class="food" :cx="state.food.x + 0.5" :cy="state.food.y + 0.5" r="0.32" />
+          <rect
+            v-for="seg in segments"
+            :key="seg.i"
+            :x="seg.x + 0.07" :y="seg.y + 0.07"
+            width="0.86" height="0.86" rx="0.27"
+            :fill="seg.fill"
+          />
+          <circle v-for="(eye, i) in eyes" :key="'eye' + i" :cx="eye.x" :cy="eye.y" r="0.1" fill="#0f141b" />
+        </svg>
+
+        <transition name="fade">
+          <div v-if="overlay" class="overlay">
+            <h2>{{ overlay.title }}</h2>
+            <p>{{ overlay.hint }}</p>
+          </div>
+        </transition>
+      </div>
+
+      <p class="help">
+        <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move
+        · <kbd>Space</kbd> to pause · swipe on touch screens
+      </p>
+    </main>
+  </script>
+
+  <script src="/vendor/vue.js"></script>
+  <script src="/game.js"></script>
+  <script src="/main.js"></script>
+</body>
+</html>

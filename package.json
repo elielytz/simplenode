@@ -1,0 +1,15 @@
+{
+  "name": "simplenode",
+  "version": "1.0.0",
+  "description": "Snake in plain Node.js: play it in the browser or in the terminal",
+  "main": "snake.js",
+  "scripts": {
+    "start": "node server.js",
+    "terminal": "node snake.js",
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^3.5.45"
+  }
+}
